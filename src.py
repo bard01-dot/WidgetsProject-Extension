@@ -87,7 +87,7 @@ ChangeLog
 - resources integrated inside the .exe
 - new icons for shortcut
 - added option for drag and modify tasks/shortcuts positions
-
+- fixed error at check latest version
 """
 #os.chdir("C:/") # test startup resource not found
 
@@ -187,14 +187,16 @@ def getCurrentVersion():# return current version for notify updates
     global isLatestVersion
     isLatestVersion = version == content
     
+    
     global logs
-    logs += f"""<li class='task' style='color: white;padding: 10px;text-align: center;display:flex;background-color: #715a5a18'>
-            <svg viewBox="0 0 48 48" style="width: 20px; fill: white">
-                    <path d="M0 0h48v48H0z" fill="none"></path>
-                    <path d="M46 24l-4.88-5.56.68-7.37-7.22-1.63-3.78-6.36L24 6l-6.8-2.92-3.78 6.36-7.22 1.63.68 7.37L2 24l4.88 5.56-.68 7.37 7.22 1.63 3.78 6.36L24 42l6.8 2.92 3.78-6.36 7.22-1.63-.68-7.37L46 24zM26 34h-4v-4h4v4zm0-8h-4V14h4v12z"></path>
-            </svg>
-            <a style="margin-left:6px"> New version is available </a>
-            </li>"""
+    if( isLatestVersion == False):
+        logs += f"""<li class='task' style='color: white;padding: 10px;text-align: center;display:flex;background-color: #715a5a18'>
+                <svg viewBox="0 0 48 48" style="width: 20px; fill: white">
+                        <path d="M0 0h48v48H0z" fill="none"></path>
+                        <path d="M46 24l-4.88-5.56.68-7.37-7.22-1.63-3.78-6.36L24 6l-6.8-2.92-3.78 6.36-7.22 1.63.68 7.37L2 24l4.88 5.56-.68 7.37 7.22 1.63 3.78 6.36L24 42l6.8 2.92 3.78-6.36 7.22-1.63-.68-7.37L46 24zM26 34h-4v-4h4v4zm0-8h-4V14h4v12z"></path>
+                </svg>
+                <a style="margin-left:6px"> New version is available </a>
+                </li>"""
 
 def obtain_current_dir():# define current path
     if getattr(sys, 'frozen', False):
@@ -665,14 +667,12 @@ def index():
     
     global start_on_startup, broweserSearch, isLatestVersion
     panel = request.args.get("panel", "defaultPanel")
-
     return render_template("index.html", panel=panel, startup=start_on_startup, browser=broweserSearch, update=isLatestVersion)
 
 # open ui
 def open_in_app_window(url, ventana):
 
     global start_on_startup, broweserSearch, isLatestVersion
-
     url_con_panel = f"{url}?panel={ventana}&startup={start_on_startup}&browser={broweserSearch}&update={isLatestVersion}"  # construye la URL con el panel
 
     browsers = [

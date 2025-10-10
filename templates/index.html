@@ -961,8 +961,15 @@
         window.moveTo(left, top);
 
         // update button
-        document.getElementById("updateButton").hidden = !"{{ update }}"
-        showNotification('New version is available')
+        const update = "{{ update }}" === "True";
+
+        // true = latest version / false = isnt latest version
+        if(update){
+            document.getElementById("updateButton").style.display = "none";
+        }
+        else{
+            showNotification('New version is available')     
+        }
 
         // define search engine
         document.getElementById("SearchEngine").value = "{{ browser }}";
