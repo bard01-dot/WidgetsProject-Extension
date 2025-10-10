@@ -1,0 +1,496 @@
+:root {
+  
+  --backgroundColor: #151516;
+  --backgroundColor2: #202020;
+  --grey: #44444E;
+  --brown: #715A5A;
+  --brown2: #403434;
+  --brown3: #715a5a18;
+
+  --white: #D3DAD9;
+  --red: #833939;
+  --red2: #8339394b;
+
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  transition: all 0.3s;
+}
+.btn:focus {
+  outline: none; 
+  box-shadow: 0px 0px 4px 2px #715a5aad; 
+}
+.input:focus{
+  border: 2px solid;
+  border-color: var(--brown);
+}
+
+body {
+  background-color: var(--backgroundColor2);
+  color: var(--white);
+  display: flex;
+  height: 100vh;
+}
+.panels{
+  transition: opacity 5s;
+}
+
+.centered-container {
+  display: flex;
+  width: 100%;
+  height: auto;
+
+  align-items: center;
+  background-color: var(--backgroundColor);
+  margin: 10px;
+  border-radius: 15px;
+  flex-direction: column;
+}
+
+.panelContainer{
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+.panelContainer a {
+  color: var(--brown);
+  margin-left: 5px;
+}
+.sidebar {
+  background-color: var(--color-bg-sidebar);
+  padding: 10px;
+  display: block;
+  flex-direction: row;
+  justify-content: space-between;
+  /* margin-right: 15px; */
+  /* border-radius: 15px; */
+  /* margin-left: -10px; */
+  justify-content: center;
+  border-bottom: 2px solid var(--backgroundColor2);
+  width: 100%;
+
+}
+
+.input {
+  background-color: var(--brown2);
+  width: 330px;
+  border: none;
+  border-radius: 15px;
+  color: var(--white);
+  padding: 10px 15px;
+  outline: none;
+  border: 2px solid;
+  border-color: var(--brown2);
+
+  transition: all 0.3s;
+  
+}
+.input:hover {
+  border: 2px solid;
+  border-color: var(--brown);
+}
+
+
+.btn {
+  padding: 10px 20px;
+  background-color: var(--backgroundColor);
+  color: var(--brown);
+  border: 2px solid var(--brown);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s;
+  font-size: 14px;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+
+  gap: 8px;
+  text-align: center;
+
+  display: flex;
+  justify-content: center;
+  
+}
+
+.btn:hover {
+  background-color: var(--backgroundColor2);
+  border-color: var(--brown2);
+ 
+}
+.btn svg{
+  width: 15px;
+  fill: var(--brown);
+}
+
+.nav-item {
+  align-items: center;
+  padding: 10px 15px;
+  text-decoration: none;
+  font-size: 16px;
+  gap: 8px;
+  
+  fill: var(--brown);
+  background-color: transparent;
+  
+}
+
+.nav-item:hover {
+  background-color: var(--backgroundColor2);
+  border-radius: 8px;
+  fill: var(--brown);
+}
+.nav-item svg{
+  width: 30px;
+}
+.exit-nav-item:hover{
+  background-color: var(--red2);
+  fill: var(--red);
+}
+.activenavItem{
+  background-color: var(--backgroundColor2);
+  border-radius: 8px;
+}
+
+.shortcutItemList{
+ 
+  display: inline-flex;
+  
+  width: 100%;
+  height: 100%;
+  justify-content: space-around;
+  
+  margin: 0;
+  border: 0px;
+  align-items: center;
+  text-align: center;
+
+  padding: 15px;
+  border-radius: 15px;
+  
+}
+.shortcutItemList:hover{
+  background-color: var(--backgroundColor2);
+}
+.shortcutItemList svg{
+  fill: var(--brown);
+  width: 30px;
+}
+.shortcutMenuIcon{
+  fill: var(--brown);
+  width: 30px;
+}
+
+.colorPicker {
+  border: none;
+  width: 0px;
+  height: 0px;
+  cursor: pointer;
+  border-radius: 0px;
+  overflow: hidden; 
+  background-color: transparent;
+  overflow: hidden;
+  padding: 0px;
+}
+
+.shortcutList {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(4, auto);
+
+}
+
+/*shortcut icons classs*/
+.shortcutClass{
+  background-color: transparent;
+  align-items: center;
+  margin-top: 15px;
+  width: 92%;
+  padding-inline: 70px;
+  margin-bottom: 15px;
+}
+.scrollMenu{
+  background-color: transparent;
+  align-items: center;
+  margin-top: 15px;
+  
+  overflow-x: hidden; overflow-y: auto;
+  
+  scrollbar-width: 15px;
+  scrollbar-color: var(--brown) transparent;
+}
+
+/* Chrome, Edge, Safari */
+.scrollMenu::-webkit-scrollbar {
+  width: 8px; /* ancho del scroll */
+}
+
+.scrollMenu::-webkit-scrollbar-track {
+  background: transparent; /* fondo transparente */
+}
+
+.scrollMenu::-webkit-scrollbar-thumb {
+  background-color: var(--brown);
+  border-radius: 10px;
+}
+
+.scrollMenu::-webkit-scrollbar-thumb:hover {
+  background-color: var(--brown2);
+}
+
+.scrollMenu::-webkit-scrollbar-thumb:active {
+  background-color: var(--brown2);
+}
+
+/* Chrome, Edge, Safari */
+.scrollMenu::-webkit-scrollbar {
+  width: 8px; /* ancho del scroll */
+}
+
+.scrollMenu::-webkit-scrollbar-track {
+  background: transparent; /* fondo transparente */
+}
+
+.scrollMenu::-webkit-scrollbar-thumb {
+  background-color: var(--brown);
+  border-radius: 10px;
+}
+
+.scrollMenu::-webkit-scrollbar-thumb:hover {
+  background-color: var(--brown2);
+}
+
+.scrollMenu::-webkit-scrollbar-thumb:active {
+  background-color: var(--brown2);
+}
+
+.colorPicker ::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.colorPicker ::-webkit-color-swatch {
+  border: none;
+  border-radius: 8px;
+}
+
+/* Contenedor del switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+}
+
+/* Ocultamos el checkbox nativo */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Estilo de la "pista" */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--backgroundColor2);
+  transition: 0.3s;
+  border-radius: 28px;
+}
+
+/* La bolita del switch */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: var(--brown2);
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+/* Cuando está activado */
+input:checked + .slider {
+  background-color: var(--brown2);
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+  background-color: var(--brown);
+}
+
+
+#notification {
+  position: fixed;
+  top: 260px;
+  right: 20px;
+  color: var(--brown);
+  padding: 10px;
+  
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 101;
+  
+  background-color: #00000027;
+  backdrop-filter: blur(20px);
+  border: 2px solid;
+  border-color: var(--brown2);
+  border-radius: 10px;
+  visibility: hidden;
+}
+
+#notification.show {
+  opacity: 1;
+  visibility: unset;
+}
+
+#startupContainer{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 7px;
+}
+
+
+.searchEngine{
+  display: flex;
+  margin-top: 20px;
+  background-color: var(--backgroundColor2);
+  border-radius: 15px;
+  overflow: hidden;
+  height: 50px;
+}
+.searchEngine button{
+  border: none;
+  border-radius: 0px;
+  background-color: transparent;
+}
+.searchEngine button:hover{
+  background-color: var(--brown2);
+}
+.searchEngine input{
+  border: none;
+  background-color: transparent;
+}
+.searchEngine input:hover{
+ border: none;
+}
+
+
+
+
+/*to-do notes*/
+.listContainer{
+  background-color: transparent;
+  border-radius: 15px;
+  color: var(--white);
+  /*border: 2px solid;
+  border-color: var(--brown2);*/
+
+  height: 130px;
+  width: auto;
+  max-width: 380px;
+
+  margin-inline:8px;
+  transition: all 0.3s;
+  padding: 10px;
+}
+
+
+.task{ 
+  color: var(--brown);
+  list-style: none;
+  font-size: 13px;
+  background-color: transparent;
+  
+  padding: 5px;
+  padding-inline: 10px;
+
+  border-radius: 5px;
+  font-family: 'r-r';
+  font-size: 15px;
+  
+}
+.task div{
+    height: 30px;
+}
+.task svg{
+  width: 30px;
+}
+
+.task:hover{
+  background-color: #ffffff05; 
+}
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  width: 15px;
+}
+
+.custom-checkbox svg{
+  width: 15px;
+  fill: var(--brown);
+}
+
+.task input {
+  display: none; /* Oculta el checkbox original */
+}
+
+.checkmark{
+  height: 10px; 
+  width: 10px; 
+  border: 2px solid transparent; 
+  border-radius: 50%; 
+  margin-right: 10px;
+  background-color: #ffffff11; 
+}
+
+.taskcheckbox:checked .checkmark:checked {
+  background-color: var(--brown);
+  border-color: var(--brown);
+}
+
+.divisores{
+  border: none;
+  height: 2px;
+  background-color: var(--brown);
+  margin-inline: -5px;
+}
+
+
+/*shortcut back button*/
+#shortcutBackButton{
+  margin-left: auto;
+  margin-right: 10px;
+  width: 20px;
+  fill: var(--brown);
+}
+#shortcutBackButton:hover{
+  scale: 1.5;
+}
+
+/*shortcut tasks*/
+.taskMenu{
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;           
+  gap: 8px;                      
+  cursor: pointer;
+  width: auto;
+  height: 25px;
+}
+
+.taskMenu svg{
+  width: 26px;
+}
+.closeTask{
+  width: 26px;
+  transition: all 0.3s;
+  padding: 5px;
+}

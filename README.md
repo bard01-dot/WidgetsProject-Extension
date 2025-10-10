@@ -6,7 +6,7 @@
 
 ## Features
 
-- **CPU, GPU and RAM Monitoring**: Displays real-time CPU, GPU and RAM usage.
+- **CPU and RAM Monitoring**: Displays real-time CPU and RAM usage.
 - **Battery Charge**: Displays current Battery Charge percent.
 - **ToDo Notes**: Manage your notes directly from the Extension.
 - **Shortcuts**: Create and display your own shortcuts inside the wallpaper.
@@ -19,6 +19,10 @@
 
 - **On the Wallpaper Side**:  The wallpaper uses javaScripts `fetch` to periodically request the system information from the LocalHost. This enables the wallpaper to dynamically update and display CPU, memory, battery usage, and any user-defined notes or to-do items, providing a real-time system monitor right on the desktop.
 
+## Preview
+<img src="/resources/notes.gif" alt="Notes Example" width="500"/>
+<img src="/resources/shortcuts.gif" alt="shortcuts example" width="500"/>
+
 ## More
 - [Video Review v2.0.4 (outdated)](https://youtu.be/1s-l17dJ2BE)
-- if you have any question you can join our [Discord](https://discord.com/invite/63EUyQBZPm) or leave a comment on the wallpaper ❤️
+- if you have any question you can join our [Discord](https://discord.com/invite/63EUyQBZPm)  -  Buy me a coffe [**Paypal❤️**](https://www.paypal.com/donate/?hosted_button_id=UBDDRKEZ4XABE)
