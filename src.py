@@ -88,6 +88,14 @@ ChangeLog
 - new icons for shortcut
 - added option for drag and modify tasks/shortcuts positions
 - fixed error at check latest version
+
+[ 2.0.14 ]==========================================
+- changes in checkExist() to prevent possible errors at check existing process
+- ui, small changes on New Version Available button (new color and located in homeMenu)
+- if New version is available the app open the menu to show notification for update
+- new logs system, now there are save on .txt file (the latest log system was trash)
+- updated readme with more info
+
 """
 #os.chdir("C:/") # test startup resource not found
 
@@ -99,7 +107,7 @@ global start_on_startup, settings, PcUsage, start_time, color_shortcut, logs, is
 start_on_startup = False 
 tasks = [] 
 shortcuts = [] 
-version = "2.0.13"
+version = "2.0.14"
 PcUsage = [0, 0]
 color_shortcut = "#AB886D"
 logs = ""
@@ -167,13 +175,14 @@ def print_Error(e):# show error with format
     print("\n - Report error on Discord: " + style.OKBLUE + " https://discord.com/invite/63EUyQBZPm"+ style.ENDC)
     print("")
     
-    
-    #logs += f"<li class='task' style='background-color: #4a4a4a2e;'> Report this error on discord: https://discord.com/invite/63EUyQBZPm </li>"
 
+    save_logs(f"\n-------------------------------------------------------------\n\n [{timeNow()}] Error occurred \n\n{e}\n\n-------------------------------------------------------------\n")
+    
     #input("Press Enter to exit...")
     
 
 def exit_app():# exit function
+    save_logs(f"\n [{timeNow()}] Exit")
     os._exit(0)
 
 def getCurrentVersion():# return current version for notify updates
@@ -186,17 +195,6 @@ def getCurrentVersion():# return current version for notify updates
 
     global isLatestVersion
     isLatestVersion = version == content
-    
-    
-    global logs
-    if( isLatestVersion == False):
-        logs += f"""<li class='task' style='color: white;padding: 10px;text-align: center;display:flex;background-color: #715a5a18'>
-                <svg viewBox="0 0 48 48" style="width: 20px; fill: white">
-                        <path d="M0 0h48v48H0z" fill="none"></path>
-                        <path d="M46 24l-4.88-5.56.68-7.37-7.22-1.63-3.78-6.36L24 6l-6.8-2.92-3.78 6.36-7.22 1.63.68 7.37L2 24l4.88 5.56-.68 7.37 7.22 1.63 3.78 6.36L24 42l6.8 2.92 3.78-6.36 7.22-1.63-.68-7.37L46 24zM26 34h-4v-4h4v4zm0-8h-4V14h4v12z"></path>
-                </svg>
-                <a style="margin-left:6px"> New version is available </a>
-                </li>"""
 
 def obtain_current_dir():# define current path
     if getattr(sys, 'frozen', False):
@@ -216,27 +214,53 @@ def defineStartupTime():# define the PC startup time
     global start_time
     start_time = psutil.Process(Get_Pid()).create_time()
 
+def show_message(msg, title="WidgetsProjectExtension"):# display okcancel messagebox using ctypes (return bool) 
+    MB_OKCANCEL = 0x01
+    MB_ICONQUESTION = 0x20
+
+    result = ctypes.windll.user32.MessageBoxW(
+        0,
+        msg,
+        title,
+        MB_OKCANCEL | MB_ICONQUESTION
+    )
+
+    IDOK = 1
+    IDCANCEL = 2
+
+    return result == IDOK
+
 def checkExist(): # check if Extension Already running
-    try:
-        response = requests.get('http://127.0.0.1:5000/exist', timeout=3)
-        if response.status_code == 200:
-            print("Extension Already running, Closing Process")
-            exit_app()
-      
-    except requests.exceptions.RequestException as e:
-        #print("Error:", e)
-        pass
 
-def printLogs(text, error):# save web logs
-    global logs
+    name, pid = get_process_using_port(5000)
+    if name: # if name -> port in use
 
-    if (error == True):
-        logs += f"""
-        <li class='task' style='color: white;padding: 10px;text-align: center;background-color: #715a5a18;'>
-        <a style="margin-left:6px">Error Found</a></li>
-        <li class='task' style='background-color: #715a5a18;'> {text} </li>"""
+        result = show_message(f"The port 5000 is acually in use for other app,\nDo you want to close this process?.\n\nName: {name}\nPID: {pid}", "Port Conflict")
+        
+        print_Error(f"The port 5000 is acually in use !\n\n- Name: {name}\n- PID: {pid}\n- Taskkill: {result}")
+
+        # kill process? y/n
+        if(result == True):
+            psutil.Process(pid).terminate()#kill process from pid and continue 
+        else:
+            exit_app() # just exit 
+            pass
+        
     else:
-        logs += f"<li class='task'>▸ {text}</li>"
+        # port is not in use -> continue w program
+        pass
+    
+def get_process_using_port(port):# get process pid using port
+    for conn in psutil.net_connections(kind='inet'):
+        if conn.laddr.port == port:
+            pid = conn.pid
+            if pid:
+                try:
+                    proc = psutil.Process(pid)
+                    return proc.name(), pid
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    return "Unknown", pid
+    return None, None
 
 def updateOrder(setting, data):  # change task/shortcut order
     global tasks, shortcuts
@@ -268,6 +292,8 @@ def updateOrder(setting, data):  # change task/shortcut order
     save_settings()
     return "1"
 
+def timeNow(): # return time now in string format | %d/%m/%Y  %H:%M:%S
+    return(time.strftime('%d/%m/%Y  %H:%M:%S', time.localtime()))
 
 
 # Notes Functions #########################################################################
@@ -280,7 +306,7 @@ def add_task(task_text):  # add new task
     
     # verify repeated notes
     if any(t['text'].strip().lower() == task_text.lower() for t in tasks):
-        printLogs("ToDo-Notes | Cannot create Tasks with repeated name: " + task_text, True)
+        save_logs("- ToDo-Notes | Cannot create Tasks with repeated name: " + task_text, True)
         return
 
     tasks.append({'text': task_text, 'checked': False})
@@ -308,7 +334,7 @@ def add_shortcut(icon, directory, shortcut_name, color):
         
         # verify repeated notes
         if any(t['name'].strip().lower() == shortcut_name.lower() for t in shortcuts):
-            printLogs("Shortcuts | Cannot create Shortcuts with repeated name: " + shortcut_name, True)
+            save_logs("- Shortcuts | Cannot create Shortcuts with repeated name: " + shortcut_name, True)
             return
 
         directory = directory.replace("\\", "/")
@@ -352,7 +378,7 @@ def obtener_info(intervalo=1): # obtain pc performance %
         """
         gpus = GPUtil.getGPUs()
         if gpus:
-            # En este ejemplo, se usa la primera GPU detectada
+            # use the first gpu 
             gpu = gpus[0]
             gpu_usage = gpu.load * 100  # porcentaje de uso
             gpu_mem_usage = (gpu.memoryUsed / gpu.memoryTotal) * 100 if gpu.memoryTotal else 0
@@ -411,6 +437,11 @@ def save_settings():# save json
 
     with open(currentPath + '/settings.json', 'w') as file:
         json.dump(settings, file, indent=4)
+    
+def save_logs(text): # save logs in txt file
+    global currentPath
+    with open(currentPath + "/logs.txt", "a", encoding="utf-8") as f:
+        f.write(text + "\n")
 
 def set_startup(value):# define start program on pc startup
     script_path = currentPath + "\\" + os.path.basename(sys.argv[0]) # Obtain .exe path
@@ -441,6 +472,7 @@ def set_startup(value):# define start program on pc startup
         winreg.CloseKey(reg_key)
     except Exception as e:
         print_Error("Startup setting error - Reg key not found \n" + str(e))
+    
 
 
 # START ALL ################################################################################
@@ -557,7 +589,7 @@ def update_notes_order():
 def update_settings():
     index = request.get_json().get("data")
 
-    if(index == "startup"):
+    if(index == "startup"): # define if app open at pc startup
         global start_on_startup
         start_on_startup = not start_on_startup
         set_startup(start_on_startup)
@@ -565,7 +597,7 @@ def update_settings():
 
         printLogs(f"Start on Startup: {start_on_startup}", False)# print logs
         
-    elif(index == "searchEngine"): # open search engine
+    elif(index == "searchEngine"): # open Ui in Settings Menu
         open_in_app_window("http://127.0.0.1:5000/", "settingsMenu")
 
     
@@ -579,7 +611,7 @@ def update_searchEngine():
     broweserSearch = data
     save_settings()
 
-    printLogs(f"Search Engine Update: {broweserSearch}", False)# print logs
+    save_logs(f"- Search Engine Update: {broweserSearch}", False)# print logs
 
     return("1")
 
@@ -588,7 +620,8 @@ def update_searchEngine():
 # open menu if already running
 @app.route('/exist', methods=['GET'])
 def exist():
-    open_in_app_window("http://127.0.0.1:5000/", "homeMenu")
+    #open_in_app_window("http://127.0.0.1:5000/", "homeMenu")
+    exit_app()
     return 'ok', 200
 
 # display cpu ram usage
@@ -609,11 +642,6 @@ def get_shortcuts():
     global shortcuts
     return json.dumps(shortcuts, ensure_ascii=False)
 
-# display logs
-@app.route('/logs', methods=['GET'])
-def get_logs():
-    global logs
-    return json.dumps(logs, ensure_ascii=False)
 
 # open folders/ ui specific menus
 @app.route('/openStuff', methods=['POST'])
@@ -649,6 +677,8 @@ def open_stuff():
     elif(data == "Terminal"):
         os.system("start cmd")
 
+    elif(data == "WeLogs"):
+        openLink(currentPath + "/logs.txt")
 
     else:
         openLink(data)
@@ -664,35 +694,43 @@ def run_flask_app():
 # open index menu
 @app.route('/')
 def index():
-    
-    global start_on_startup, broweserSearch, isLatestVersion
-    panel = request.args.get("panel", "defaultPanel")
-    return render_template("index.html", panel=panel, startup=start_on_startup, browser=broweserSearch, update=isLatestVersion)
+    try:
+        global start_on_startup, broweserSearch, isLatestVersion
+        panel = request.args.get("panel", "defaultPanel")
+        return render_template("index.html", panel=panel, startup=start_on_startup, browser=broweserSearch, update=isLatestVersion)
+    except Exception as e: 
+        print_Error(f"Function: index()\n{e}") # print error console
+        time.sleep(5) # sleep 5s 
+        exit_app() # exit app
 
 # open ui
 def open_in_app_window(url, ventana):
+    try: 
+        global start_on_startup, broweserSearch, isLatestVersion
+        url_con_panel = f"{url}?panel={ventana}&startup={start_on_startup}&browser={broweserSearch}&update={isLatestVersion}"  # construye la URL con el panel
 
-    global start_on_startup, broweserSearch, isLatestVersion
-    url_con_panel = f"{url}?panel={ventana}&startup={start_on_startup}&browser={broweserSearch}&update={isLatestVersion}"  # construye la URL con el panel
+        browsers = [
+            ("chrome", ["--app=" + url_con_panel]),
+            (r"C:\Program Files\Google\Chrome\Application\chrome.exe", ["--app=" + url_con_panel]),
+            (r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe", ["--app=" + url_con_panel]),
+            (r"C:\Program Files\Opera\launcher.exe", ["--app=" + url_con_panel]),
+            ("msedge", ["--app=" + url_con_panel]),
+            (r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe", ["--app=" + url_con_panel]),
+        ]
 
-    browsers = [
-        ("chrome", ["--app=" + url_con_panel]),
-        (r"C:\Program Files\Google\Chrome\Application\chrome.exe", ["--app=" + url_con_panel]),
-        (r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe", ["--app=" + url_con_panel]),
-        (r"C:\Program Files\Opera\launcher.exe", ["--app=" + url_con_panel]),
-        ("msedge", ["--app=" + url_con_panel]),
-        (r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe", ["--app=" + url_con_panel]),
-    ]
-
-    for browser, args in browsers:
-        browser_path = shutil.which(browser) if "\\" not in browser else browser
-        if browser_path and os.path.exists(browser_path):
-            subprocess.Popen([browser_path] + args)
-            return
+        for browser, args in browsers:
+            browser_path = shutil.which(browser) if "\\" not in browser else browser
+            if browser_path and os.path.exists(browser_path):
+                subprocess.Popen([browser_path] + args)
+                return
 
 
-    # fallback
-    webbrowser.open(url_con_panel +  ",--disable-resize")
+        # fallback
+        webbrowser.open(url_con_panel +  ",--disable-resize")
+    except Exception as e: 
+        print_Error(f"Function: open_in_app_window()\n{e}") # print error console
+        time.sleep(5) # sleep 5s 
+        exit_app() # exit app
 
 # exit via post
 @app.route('/exit', methods=['POST'])
@@ -708,56 +746,33 @@ if __name__ == "__main__":
     try:
         
         os.system(f"title Widgets Project v{version} && cls")
-        print(style.RED + f"\n - Widgets Project Extension v{version}\n ------------------------------------ \n" + style.ENDC)
-        logs += f"""<li class='task' style='color: white;padding: 10px;text-align: center;'>
-        <svg viewBox="0 0 24 24" style="fill: #715A5A; width:10px"><path d="M3 0v1.5H1.5V3H0v12h3v3h3v3h3v3h6v-3h3v-3h3v-3h3V3h-1.5V1.5H21V0h-3v1.5h-3V3h-1.5v3h-3V3H9V1.5H6V0z"/></svg>
-        <a style="margin-left:6px">Widgets Project Extension <b style="color:#715A5A;margin-left:5px"> v{version}</b></a>
-        </li>"""
-       
-
-        #print(style.RED + " * ▸" + style.ENDC + " Console Visibility")
-        #logs += "<li class='task'> ▸ Console Visibility </li>"
-        #console_visibility(2)
- 
-        # save execute time (to check if is updated in wpp)
-        #logs +=  f"<li class='task'> ▸  {time.strftime('%H:%M:%S', time.localtime())} </li>"
-        logs += f"""<li class='task' style='color: white;padding: 10px;text-align: center;display:flex;background-color:#715a5a18'>
-            <svg viewBox="0 0 24 24" style="width: 18px; fill: white">
-                <path d="M12,0C5.4,0,0,5.4,0,12c0,6.6,5.4,12,12,12s12-5.4,12-12C24,5.4,18.6,0,12,0z M12,21c-5,0-9-4-9-9c0-5,4-9,9-9s9,4,9,9    C21,17,17,21,12,21z"/><path d="M14,11.2V7c0-1.1-0.9-2-2-2s-2,0.9-2,2v5c0,0.5,0.2,1,0.6,1.4l3,3C14,16.8,14.5,17,15,17s1-0.2,1.4-0.6    c0.8-0.8,0.8-2,0-2.8L14,11.2z"/>
-            </svg>
-            <a style="margin-left:6px"> ▸  {time.strftime('%I:%M:%S %p', time.localtime())}  </a>
-            </li>"""
-
-
-        print(style.RED + " * ▸" + style.ENDC + " Check if extension is already running")
-        logs += "<li class='task'> ▸ Check if Extension is already Running </li>"
-        checkExist()
-
-
-        print(style.RED + " * ▸" + style.ENDC +  " Current Path")
-        logs += "<li class='task'> ▸ Define Current Path </li>"
         currentPath = obtain_current_dir()
 
-        print(style.RED + " * ▸" + style.ENDC +  " Define Startup Time")
-        logs += "<li class='task'> ▸ Define Startup Time </li>"
+        save_logs("\n\n================================================================================\n")
+        save_logs(f" [{timeNow()}] we-extension {version}\n") # time app start
+        #save_logs(f"+ Console Visibility")
+        #console_visibility(2)
+
+        save_logs(f"+ Check if Extension is already Running ")
+        checkExist()
+
+        save_logs(f"+ Define Startup Time")
         defineStartupTime()
 
-        print(style.RED + " * ▸" + style.ENDC +  " LocalHost sv")
-        logs += "<li class='task'>  ▸ Starting LocalHost Server </li>"
+        save_logs(f"+ Starting LocalHost Server")
         logger = logging.getLogger('werkzeug')
         logger.setLevel(logging.ERROR)  # prevent show  flask requests messages in debug console
         threading.Thread(target=run_flask_app).start() # start flask thread
 
-        print(style.RED + " * ▸" + style.ENDC +  " .json settings")
-        logs += "<li class='task'>  ▸ Loading .Json Settings </li>"
-        preLoad()  # load settings
+        save_logs(f"+ Loading .Json Settings")
+        preLoad()# load settings
 
-        print(style.RED + "\n * ▸" + style.ENDC +  " Check For Updates \n")
-        logs += "<li class='task'>  ▸ Check For Updates </li>"
-        getCurrentVersion()
+        save_logs(f"+ Check For Updates ")
+        getCurrentVersion()# check for updates
+        if(isLatestVersion == False):# open menu if new version is available
+            open_in_app_window("http://127.0.0.1:5000/", "homeMenu") 
 
-        print(style.RED + "\n * ▸" + style.ENDC +  " tryicon menu\n")
-        logs += "<li class='task'>  ▸ Starting Extension </li>"
+        save_logs(f"+ Starting Extension ")
         tricon()  # display tryicon menu
 
         
@@ -766,6 +781,5 @@ if __name__ == "__main__":
         
     except Exception as e: 
         print_Error(e) # print error console
-        printLogs(e, True) # print logs in web logs
         time.sleep(5) # sleep 5s 
         exit_app() # exit app

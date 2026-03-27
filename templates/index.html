@@ -80,6 +80,15 @@
                 </svg>
                 Join our Discord
             </a>
+
+            <!-- update button -->
+            <a class="btn"  target="_blank" id="updateButton" href="https://github.com/NicouHc/WidgetsProject-Extension" style="color: #8da160; border-color: #8da160;">
+                <svg viewBox="0 0 48 48" style=" fill: #8da160;">
+                    <path d="M0 0h48v48H0z" fill="none"/>
+                    <path d="M46 24l-4.88-5.56.68-7.37-7.22-1.63-3.78-6.36L24 6l-6.8-2.92-3.78 6.36-7.22 1.63.68 7.37L2 24l4.88 5.56-.68 7.37 7.22 1.63 3.78 6.36L24 42l6.8 2.92 3.78-6.36 7.22-1.63-.68-7.37L46 24zM26 34h-4v-4h4v4zm0-8h-4V14h4v12z"/>
+                </svg>
+                New version is available
+            </a>
             
         </div>
     </div>
@@ -767,15 +776,6 @@
             </button>
             </div>
 
-            <!-- update button -->
-            <a class="btn"  target="_blank" id="updateButton" href="https://github.com/NicouHc/WidgetsProject-Extension" style="margin-top: 30px;">
-                <svg viewBox="0 0 48 48">
-                    <path d="M0 0h48v48H0z" fill="none"/>
-                    <path d="M46 24l-4.88-5.56.68-7.37-7.22-1.63-3.78-6.36L24 6l-6.8-2.92-3.78 6.36-7.22 1.63.68 7.37L2 24l4.88 5.56-.68 7.37 7.22 1.63 3.78 6.36L24 42l6.8 2.92 3.78-6.36 7.22-1.63-.68-7.37L46 24zM26 34h-4v-4h4v4zm0-8h-4V14h4v12z"/>
-                </svg>
-                New version is available
-            </a>
-
         </div>  
     </div>
     
@@ -968,7 +968,7 @@
             document.getElementById("updateButton").style.display = "none";
         }
         else{
-            showNotification('New version is available')     
+            //showNotification('New version is available')     
         }
 
         // define search engine
@@ -1244,6 +1244,7 @@ refreshNotes();
             
         } catch (err) {
             showNotification('Error - delete Note');
+            
         }
         refreshShortcuts();
     }
