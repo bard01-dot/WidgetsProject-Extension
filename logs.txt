@@ -1,0 +1,12 @@
+
+
+================================================================================
+
+ [15/10/2026  21:16:17] we-extension 2.0.14
+
++ Check if Extension is already Running 
++ Define Startup Time
++ Starting LocalHost Server
++ Loading .Json Settings
++ Check For Updates 
++ Starting Extension 
