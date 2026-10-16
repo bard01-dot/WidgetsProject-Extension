@@ -1,0 +1,25 @@
+async function refreshInfo() {
+    try {
+        // reques values
+        const content = await fetch("http://127.0.0.1:5000/usage");
+        usage = await content.json();
+        
+        // define individual values
+        var cpuUsage = usage[0];
+        var ramUsage = usage[1];
+        var batteryUsage = usage[2];
+        var startupTime = `up ${usage[3]} hours, ${usage[4]} minutes`;
+
+        // show in console
+        console.log("Cpu Usage: " + cpuUsage + "%");
+        console.log("Ram Usage: " + ramUsage + "%");
+        console.log("Battery: " + batteryUsage  + "%");
+        console.log("StartUp Time: " + startupTime);
+
+        // the app have gpu usage (GPUUsage = usage[5];) but its temporaly disabled for incompatibilitys with the ui
+    }
+
+
+    const interval = 5000; // 5 seconds
+    setInterval(function(){refreshInfo();}, interval);// refresh usage every <interval> seconds
+}
